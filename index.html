@@ -2,14 +2,750 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="PNTR Platform">
-    <title>PNTR Platform</title>
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iMjAiIGZpbGw9IiMzQjgyRjYiLz4KPHN2ZyB4PSI0NSIgeT0iNDUiIHdpZHRoPSI5MCIgaGVpZ2h0PSI5MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPgo8cGF0aCBkPSJNMTIgMmwzLjA5IDYuMjZMMjIgOWwtNSA0Ljg3TDE4LjE4IDIybC02LjE4LTMuMjZMMTIgMjJsLTYuMTgtMy4yNkw2IDIybDUuMDktNC44N0wyIDlsNi45MS0uNzR6Ii8+Cjwvc3ZnPgo8L3N2Zz4=">
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNTR - Plateforme Nationale de Transparence et de Redevabilité</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .logo-text h1 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .logo-text p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-menu a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-menu a:hover {
+            color: #667eea;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: none;
+        }
+        
+        .main-content.active {
+            display: block;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status.en-cours {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.verifie {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.rejete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+        
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #2c3e50;
+                cursor: pointer;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .section-title {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">PNTR</div>
+                <div class="logo-text">
+                    <h1>PNTR</h1>
+                    <p>Transparence & Redevabilité</p>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a onclick="showSection('accueil')">Accueil</a></li>
+                    <li><a onclick="showSection('declarations')">Déclarations de Patrimoine</a></li>
+                    <li><a onclick="showSection('marches')">Marchés Publics</a></li>
+                    <li><a onclick="showSection('signalement')">Signalement</a></li>
+                    <li><a onclick="showSection('dashboard')">Tableau de Bord</a></li>
+                </ul>
+                <button class="mobile-menu">☰</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Section Accueil -->
+        <section id="accueil" class="main-content active">
+            <div class="hero">
+                <h2>Bienvenue sur la PNTR</h2>
+                <p>Plateforme Nationale de Transparence et de Redevabilité du Tchad - Ensemble pour une gouvernance transparente</p>
+            </div>
+            
+            <div class="dashboard">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(45deg, #ff6b6b, #feca57);">📊</div>
+                        <h3 class="card-title">Déclarations de Patrimoine</h3>
+                    </div>
+                    <div class="stat-number">847</div>
+                    <div class="stat-label">Déclarations reçues cette année</div>
+                    <button class="btn" onclick="showSection('declarations')">Consulter</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">🏢</div>
+                        <h3 class="card-title">Marchés Publics</h3>
+                    </div>
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Contrats publiés ce mois</div>
+                    <button class="btn" onclick="showSection('marches')">Explorer</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">🚨</div>
+                        <h3 class="card-title">Signalements</h3>
+                    </div>
+                    <div class="stat-number">23</div>
+                    <div class="stat-label">Alertes en cours de traitement</div>
+                    <button class="btn" onclick="showSection('signalement')">Signaler</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(45deg, #667eea, #764ba2);">📈</div>
+                        <h3 class="card-title">Indice de Transparence</h3>
+                    </div>
+                    <div class="stat-number">78%</div>
+                    <div class="stat-label">Score national actuel</div>
+                    <button class="btn" onclick="showSection('dashboard')">Détails</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Déclarations de Patrimoine -->
+        <section id="declarations" class="main-content">
+            <h2 class="section-title">Déclarations de Patrimoine</h2>
+            
+            <div class="form-container">
+                <h3>Nouvelle Déclaration de Patrimoine</h3>
+                <form id="declarationForm">
+                    <div class="form-group">
+                        <label for="nom">Nom et Prénom</label>
+                        <input type="text" id="nom" name="nom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fonction">Fonction</label>
+                        <input type="text" id="fonction" name="fonction" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="institution">Institution</label>
+                        <select id="institution" name="institution" required>
+                            <option value="">Sélectionnez votre institution</option>
+                            <option value="ministere">Ministère</option>
+                            <option value="assemblee">Assemblée Nationale</option>
+                            <option value="cour">Cour Suprême</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patrimoine">Valeur du Patrimoine (FCFA)</label>
+                        <input type="number" id="patrimoine" name="patrimoine" required>
+                    </div>
+                    <button type="submit" class="btn">Soumettre la Déclaration</button>
+                </form>
+                <div id="declarationSuccess" class="success-message">
+                    Déclaration soumise avec succès ! Vous recevrez une confirmation par email.
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <h3>Déclarations Récentes</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Fonction</th>
+                            <th>Institution</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>15/05/2025</td>
+                            <td>Directeur Général</td>
+                            <td>Ministère des Finances</td>
+                            <td><span class="status verifie">Vérifié</span></td>
+                        </tr>
+                        <tr>
+                            <td>12/05/2025</td>
+                            <td>Secrétaire Général</td>
+                            <td>Assemblée Nationale</td>
+                            <td><span class="status en-cours">En cours</span></td>
+                        </tr>
+                        <tr>
+                            <td>10/05/2025</td>
+                            <td>Ministre Délégué</td>
+                            <td>Ministère de la Santé</td>
+                            <td><span class="status verifie">Vérifié</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section Marchés Publics -->
+        <section id="marches" class="main-content">
+            <h2 class="section-title">Marchés Publics</h2>
+            
+            <div class="table-container">
+                <h3>Marchés Publics en Cours</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Objet</th>
+                            <th>Institution</th>
+                            <th>Montant (FCFA)</th>
+                            <th>Date Limite</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>MP-2025-001</td>
+                            <td>Construction d'écoles primaires</td>
+                            <td>Ministère de l'Éducation</td>
+                            <td>2,500,000,000</td>
+                            <td>30/06/2025</td>
+                            <td><span class="status en-cours">Ouvert</span></td>
+                        </tr>
+                        <tr>
+                            <td>MP-2025-002</td>
+                            <td>Fourniture de matériel médical</td>
+                            <td>Ministère de la Santé</td>
+                            <td>850,000,000</td>
+                            <td>25/06/2025</td>
+                            <td><span class="status en-cours">Ouvert</span></td>
+                        </tr>
+                        <tr>
+                            <td>MP-2025-003</td>
+                            <td>Réhabilitation des routes</td>
+                            <td>Ministère des Infrastructures</td>
+                            <td>5,200,000,000</td>
+                            <td>15/07/2025</td>
+                            <td><span class="status verifie">Attribué</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section Signalement -->
+        <section id="signalement" class="main-content">
+            <h2 class="section-title">Signalement Citoyen</h2>
+            
+            <div class="form-container">
+                <h3>Signaler un Acte de Corruption</h3>
+                <p style="margin-bottom: 1.5rem; color: #7f8c8d;">
+                    Votre identité restera confidentielle. Tous les signalements sont traités avec la plus grande discrétion.
+                </p>
+                <form id="signalementForm">
+                    <div class="form-group">
+                        <label for="typeIncident">Type d'Incident</label>
+                        <select id="typeIncident" name="typeIncident" required>
+                            <option value="">Sélectionnez le type</option>
+                            <option value="corruption">Corruption</option>
+                            <option value="detournement">Détournement de fonds</option>
+                            <option value="marche">Irrégularité dans les marchés</option>
+                            <option value="nepotisme">Népotisme</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="institution">Institution Concernée</label>
+                        <input type="text" id="institutionSignal" name="institution" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description Détaillée</label>
+                        <textarea id="description" name="description" rows="5" required placeholder="Décrivez les faits observés avec le maximum de détails..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="preuves">Preuves (Optionnel)</label>
+                        <input type="file" id="preuves" name="preuves" multiple accept=".pdf,.jpg,.png,.doc,.docx">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact">Contact (Optionnel)</label>
+                        <input type="email" id="contact" name="contact" placeholder="votre.email@exemple.com">
+                    </div>
+                    <button type="submit" class="btn">Envoyer le Signalement</button>
+                </form>
+                <div id="signalementSuccess" class="success-message">
+                    Signalement envoyé avec succès ! Numéro de suivi : SIG-2025-047
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Tableau de Bord -->
+        <section id="dashboard" class="main-content">
+            <h2 class="section-title">Tableau de Bord</h2>
+            
+            <div class="dashboard">
+                <div class="card">
+                    <h3>Évolution des Signalements</h3>
+                    <div class="chart-container">
+                        <canvas id="signalmentsChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Répartition par Institution</h3>
+                    <div class="chart-container">
+                        <canvas id="institutionsChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Indicateurs Clés</h3>
+                    <div style="margin-top: 1rem;">
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Taux de Traitement :</strong> 
+                            <div style="background: #e0e6ed; border-radius: 10px; height: 20px; margin-top: 5px;">
+                                <div style="background: linear-gradient(45deg, #4ecdc4, #44a08d); width: 85%; height: 100%; border-radius: 10px;"></div>
+                            </div>
+                            <small>85% des signalements traités</small>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Délai Moyen de Traitement :</strong> 
+                            <div style="background: #e0e6ed; border-radius: 10px; height: 20px; margin-top: 5px;">
+                                <div style="background: linear-gradient(45deg, #667eea, #764ba2); width: 72%; height: 100%; border-radius: 10px;"></div>
+                            </div>
+                            <small>18 jours (objectif: 25 jours)</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Actions Récentes</h3>
+                    <div style="margin-top: 1rem;">
+                        <div style="border-left: 4px solid #4ecdc4; padding-left: 1rem; margin-bottom: 1rem;">
+                            <strong>Enquête ouverte</strong><br>
+                            <small>Ministère des Travaux Publics - Il y a 2 heures</small>
+                        </div>
+                        <div style="border-left: 4px solid #feca57; padding-left: 1rem; margin-bottom: 1rem;">
+                            <strong>Déclaration vérifiée</strong><br>
+                            <small>Assemblée Nationale - Il y a 4 heures</small>
+                        </div>
+                        <div style="border-left: 4px solid #ff6b6b; padding-left: 1rem;">
+                            <strong>Nouveau signalement</strong><br>
+                            <small>Ministère de la Santé - Il y a 6 heures</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Navigation entre les sections
+        function showSection(sectionId) {
+            // Masquer toutes les sections
+            const sections = document.querySelectorAll('.main-content');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Afficher la section sélectionnée
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Initialiser les graphiques si c'est le dashboard
+            if (sectionId === 'dashboard') {
+                setTimeout(initCharts, 100);
+            }
+        }
+
+        // Gestion du formulaire de déclaration
+        document.getElementById('declarationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('declarationSuccess').style.display = 'block';
+            this.reset();
+            setTimeout(() => {
+                document.getElementById('declarationSuccess').style.display = 'none';
+            }, 5000);
+        });
+
+        // Gestion du formulaire de signalement
+        document.getElementById('signalementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('signalementSuccess').style.display = 'block';
+            this.reset();
+            setTimeout(() => {
+                document.getElementById('signalementSuccess').style.display = 'none';
+            }, 5000);
+        });
+
+        // Initialisation des graphiques
+        function initCharts() {
+            // Graphique des signalements
+            const ctx1 = document.getElementById('signalmentsChart');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun'],
+                        datasets: [{
+                            label: 'Signalements',
+                            data: [12, 19, 8, 15, 25, 23],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Graphique des institutions
+            const ctx2 = document.getElementById('institutionsChart');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Min. Finances', 'Min. Santé', 'Min. Éducation', 'Autres'],
+                        datasets: [{
+                            data: [30, 25, 20, 25],
+                            backgroundColor: [
+                                '#ff6b6b',
+                                '#4ecdc4',
+                                '#feca57',
+                                '#a8edea'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Animation au chargement
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
